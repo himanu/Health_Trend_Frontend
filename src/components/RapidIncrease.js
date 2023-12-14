@@ -1,5 +1,26 @@
 import DecreaseIcon from "./DecreaseIcon";
 import IncreaseIcon from "./IncreaseIcon";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 const HealthInsight = ({ increase, parameter, percentageChange, normalRange, lastTest, currentTest }) => {
     return (
@@ -121,7 +142,22 @@ const RiskSubHeading = ({ hasPastRecord, lowerLimit, higherLimit, increased, cha
         </span>
     </div>
 );
+const options = {
+    responsive: true,
+    plugins: {
+        legend: {
+            display: false, // Hide the legend
+        },
+    }
+};
+const Separator = () => (
+    <div style={{
+        height: "8px",
+        background: "#EDF2F9",
+    }}></div>
+)
 const RapidIncrease = () => {
+    let orderDueDate = '12 Jan, 2024', retestLink = '';
     const hasRisk = true;
     const parameter = "LDL Cholesterol - Direct";
     const result = [{
@@ -146,6 +182,19 @@ const RapidIncrease = () => {
         const oldestResult = result[0].value, latestResult = result[result?.length - 1].value;
         change = Number((latestResult - oldestResult)/oldestResult).toFixed(2) * 100;
     }
+    const data = {
+        labels: result?.map((item) => item.date),
+        datasets: [
+            {
+                data: result?.map((item) => item.value),
+                borderColor: hasRisk ? '#CC4C4E' : "#45A081",
+                borderWidth: 5,
+                lineTension: 0.6
+
+            }
+        ],
+    };
+    const suggestedProductLink = "#"
     return (
         <div>
             {hasRisk && <Highlighter text="NEW RISK FOUND" />}
@@ -170,14 +219,63 @@ const RapidIncrease = () => {
             >
                 {hasRisk ? <RiskSubHeading hasPastRecord={result?.length > 1} lowerLimit={lowerLimit} higherLimit={higherLimit} increased={change ? change > 0 : false} change={Math.abs(change)} unit={unit}  /> : <NonRiskSubHeading parameter={parameter} />}
             </div>
-            {/* <HealthInsight
-                increase={increase}
-                parameter={parameter}
-                percentageChange={percentageChange}
-                normalRange={normalRange}
-                currentTest={currentTest}
-                lastTest={lastTest}
-            /> */}
+            <Line options={options} data={data} />
+            {orderDueDate && (
+                <>
+                <Separator />
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-around"
+                    }}
+                >
+                    <div 
+                        style={{
+                            fontSize: "14px",
+                            fontStyle: "normal",
+                            fontWeight: 500
+                        }}
+                    > Test Due on {orderDueDate}</div>
+                    <button style={{
+                        padding: "8px 10px",
+                        background: "#10847E",
+                        borderRadius: "8px",
+                        color: "#fff",
+                        borderColor: "transparent"
+                    }}> <a href="#"> </a>Retest </button>
+                </div>
+                <Separator />
+                </>
+            )}
+            {!orderDueDate && suggestedProductLink && (
+                <>
+                    <Separator />
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-around"
+                        }}
+                    >
+                        <div
+                            style={{
+                                fontSize: "14px",
+                                fontStyle: "normal",
+                                fontWeight: 500
+                            }}
+                        > Buy essentials to maintain body vitals</div>
+                        <button style={{
+                            padding: "8px 10px",
+                            background: "#10847E",
+                            borderRadius: "8px",
+                            color: "#fff",
+                            borderColor: "transparent"
+                        }}> <a href={suggestedProductLink}> </a>Browse </button>
+                    </div>
+                    <Separator />
+                </>
+            )}
         </div>
     )
 };

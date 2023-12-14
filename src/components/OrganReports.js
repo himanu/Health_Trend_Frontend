@@ -1,9 +1,12 @@
+import { useState } from "react";
 import DecreaseIcon from "./DecreaseIcon";
 import DiabetesSvg from "./DiabetesSvg";
 import IncreaseIcon from "./IncreaseIcon";
+import VitaminSvg from "./VitaminsSvg";
 
 const icons = {
-    "Diabetes": <DiabetesSvg />
+    "Diabetes": <DiabetesSvg />,
+    "Vitamins": <VitaminSvg />
 }
 const emojis = {
     "happy": (
@@ -23,71 +26,40 @@ const emojis = {
         </svg>
     )
 }
-const OrganReport = ({ }) => {
-    return (
-        <div>
-            <div class="card">
-                <div class="card-header" id="headingOne">
-                    <h5 class="mb-0">
-                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Collapsible Group Item #1
-                        </button>
-                    </h5>
-                    <div>
-                        Lorem cjvbjbfjv jfbwjk jkfbej ojfeqf edjf jfebqw jfbqj kjfbkjqew jwqfb
-                    </div>
-                </div>
 
-                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-                    <div class="card-body">
-                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const OrganReport1 = ({ totalParameter, outOfRange, parameterResult, reportName, lastResultDate, secondLastTestResultDate }) => {
+const OrganReport = ({ totalParameter, outOfRange, parameterResult, reportName, lastResultDate, secondLastTestResultDate }) => {
+    const id = `collapse${reportName}`
     return (
-        <div>
+        <div style={{background: "#fff", borderRadius: "4px"}}>
             <Header totalParameter={totalParameter} outOfRange={outOfRange} reportName={reportName} />
             <div style={{ height: "2px", backgroundColor: "#EDF2F9" }}></div>
-            <ParameterHeading lastResultDate={lastResultDate} secondLastTestResultDate={secondLastTestResultDate} />
-            {parameterResult.map((result) => (
-                <Parameter parameterResult={result} />
-            ))}
+            <div id={id} class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                <ParameterHeading lastResultDate={lastResultDate} secondLastTestResultDate={secondLastTestResultDate} />
+                {parameterResult.map((result) => (
+                    <Parameter parameterResult={result} />
+                ))}
+            </div>
         </div>
     )
 }
 
-{/* <div>
-    <div>
-        {icons[bodyTest]}
-    </div>
-    <div>
-        <div>
-            {bodyTest}
-        </div>
-        <div>
-            {outOfRange}/{total} Need Attention
-        </div>
-    </div>
-</div> */}
 
 const Header = ({ totalParameter, outOfRange, reportName }) => {
     const happyFlow = outOfRange === 0;
+    const id = `collapse${reportName}`;
+    const [collapsed, setCollapsed] = useState(true);
     return (
         <div
             style={{
                 display: "flex",
-                padding: "10px"
+                padding: "10px",
+                position: "relative"
             }}
         >
             <div style={{ marginRight: "8px" }}>
                 {icons[reportName]}
             </div>
-            <div>
+            <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: "600", fontSize: "14px" }}>{reportName} Monitoring</div>
                 <div style={{ fontSize: "12px", display: "flex", alignItems: "center", gap: "4px", marginTop: "5px", fontWeight: "600", color: "#4F585E" }}>
                     <span
@@ -97,7 +69,7 @@ const Header = ({ totalParameter, outOfRange, reportName }) => {
                     > {happyFlow ? totalParameter : outOfRange} </span>
                     {"/"}
                     <span> {totalParameter} </span>
-                    <span> {happyFlow ? " Needs Attention" : " All Looks Good"}</span>
+                    <span> {!happyFlow ? " Needs Attention" : " All Looks Good"}</span>
                     {happyFlow ? emojis["happy"] : emojis["sad"]}
                     <div
                         style={{
@@ -111,6 +83,22 @@ const Header = ({ totalParameter, outOfRange, reportName }) => {
                         View All
                     </div>
                 </div>
+            </div>
+            <div
+                style={{
+                    position: "absolute",
+                    top: "5px",
+                    right: "5px",
+                    transform: `${collapsed ? "rotate(180deg)" : "rotate(0deg)"}`,
+                    transition: "transform 0.6s"
+                }}
+                data-toggle="collapse" data-target={`#${id}`} aria-expanded="true" aria-controls={id}
+                onClick={() => setCollapsed(!collapsed)}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <rect width="24" height="24" rx="12" transform="matrix(1 0 0 -1 0 24)" fill="#EDF2F9" />
+                    <path d="M17 14.5L12 9.5L7 14.5" stroke="#30363C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
             </div>
         </div>
     )
@@ -148,7 +136,7 @@ const Parameter = ({ parameterResult }) => {
             display: "flex",
             padding: "10px 12px"
         }}>
-            <div style={{flex: 1}}>
+            <div style={{ flex: 1 }}>
                 <div
                     style={{
                         fontFamily: "Inter",
@@ -163,7 +151,7 @@ const Parameter = ({ parameterResult }) => {
                     fontWeight: 400
                 }}>
                     {increased ? <IncreaseIcon color={color} /> : <DecreaseIcon color={color} />}
-                    <span style={{marginLeft: "5px"}}>
+                    <span style={{ marginLeft: "5px" }}>
                         {increased ? "Increased by" : "Decreased by"} {Math.abs(changedBy).toFixed(2)} {unit}
                     </span>
                 </div>
@@ -186,7 +174,7 @@ const Parameter = ({ parameterResult }) => {
                 position: "relative"
             }}
             >
-                <div style={{flex: 1}}> </div>
+                <div style={{ flex: 1 }}> </div>
                 <div style={{ flex: 1, background: "#E7FFF2" }}> </div>
                 <div style={{ flex: 1 }}> </div>
                 <div
@@ -198,12 +186,12 @@ const Parameter = ({ parameterResult }) => {
                         justifyContent: "space-around"
                     }}
                 >
-                    <div style={{width: "20px", display: "flex", flexDirection: "column", justifyContent: "flex-end"}}>
+                    <div style={{ width: "20px", display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
                         <div style={{
                             fontSize: "10px",
                             fontWeight: 500
                         }}> {lastResultValue}</div>
-                        <div style={{ height: calculateHeight(lastResultValue), background: calculateBackground(lastResultValue)  }}> </div>
+                        <div style={{ height: calculateHeight(lastResultValue), background: calculateBackground(lastResultValue) }}> </div>
                     </div>
                     <div style={{ width: "20px", display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
                         <div style={{
@@ -242,22 +230,40 @@ const ParameterHeading = ({ lastResultDate, secondLastTestResultDate }) => {
     )
 }
 
-const reports = {
-
-}
 
 const parameterResult = [{
     name: "Fasting Blood Sugar(Glucose)",
     increased: true,
     isGood: false,
     minLimit: 70,
-    maxLimit: 99,
+    maxLimit: 100,
     unit: "mg/dl",
-    lastResultValue: 97,
+    lastResultValue: 94,
     latestResultValue: 102.6
+}, {
+    name: "Avg Blood Glucose(ABG)",
+    increased: true,
+    isGood: false,
+    minLimit: 90,
+    maxLimit: 120,
+    unit: "mg/dl",
+    lastResultValue: 120,
+    latestResultValue: 150
+}, {
+    name: "HbA 1C",
+    increased: false,
+    isGood: true,
+    minLimit: 0,
+    maxLimit: 5.7,
+    unit: "%",
+    lastResultValue: 6.1,
+    latestResultValue: 5.3
 }]
 const lastResultDate = "16 March, 2023", secondLastTestResultDate = "12 Jan, 2023";
 const OrganReports = () => (
-    <OrganReport1 totalParameter={32} outOfRange={2} parameterResult={parameterResult} reportName="Diabetes" lastResultDate={lastResultDate} secondLastTestResultDate={secondLastTestResultDate} />
+    <div style={{ padding: "10px 20px", background: "var(--Colour-Palette-Neutral-Light-N10, #F5F8FC)"}}>
+        <OrganReport totalParameter={32} outOfRange={2} parameterResult={parameterResult} reportName="Diabetes" lastResultDate={lastResultDate} secondLastTestResultDate={secondLastTestResultDate} />
+        <OrganReport totalParameter={10} outOfRange={0} parameterResult={parameterResult} reportName="Vitamins" lastResultDate={lastResultDate} secondLastTestResultDate={secondLastTestResultDate} />
+    </div>
 )
 export default OrganReports;

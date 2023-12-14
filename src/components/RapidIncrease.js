@@ -51,9 +51,9 @@ const HealthInsight = ({ increase, parameter, percentageChange, normalRange, las
                 </div>
             </div>
 
-            <div>
+            <div style={{fontSize: "10px"}}>
                 <IncreaseIcon color="red" />
-                <span>Rapid {increase ? "Increase": "Decrease"} by {percentageChange}%</span>
+                <span style={{marginLeft: "8px"}}>Rapid {increase ? "Increase": "Decrease"} by {percentageChange}%</span>
                 <span> </span>
             </div>
 

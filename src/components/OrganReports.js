@@ -27,13 +27,13 @@ const emojis = {
     )
 }
 
-const OrganReport = ({ totalParameter, outOfRange, parameterResult, reportName, lastResultDate, secondLastTestResultDate }) => {
+const OrganReport = ({ totalParameter, outOfRange, parameterResult, reportName, lastResultDate, secondLastTestResultDate, open }) => {
     const id = `collapse${reportName}`
     return (
         <div style={{background: "#fff", borderRadius: "4px"}}>
-            <Header totalParameter={totalParameter} outOfRange={outOfRange} reportName={reportName} />
+            <Header totalParameter={totalParameter} outOfRange={outOfRange} reportName={reportName} open={open} />
             <div style={{ height: "2px", backgroundColor: "#EDF2F9" }}></div>
-            <div id={id} class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+            <div id={id} class={`collapse ${open && "show"}`}  aria-labelledby="headingOne" data-parent="#accordion">
                 <ParameterHeading lastResultDate={lastResultDate} secondLastTestResultDate={secondLastTestResultDate} />
                 {parameterResult.map((result) => (
                     <Parameter parameterResult={result} />
@@ -44,10 +44,10 @@ const OrganReport = ({ totalParameter, outOfRange, parameterResult, reportName, 
 }
 
 
-const Header = ({ totalParameter, outOfRange, reportName }) => {
+const Header = ({ totalParameter, outOfRange, reportName, open }) => {
     const happyFlow = outOfRange === 0;
     const id = `collapse${reportName}`;
-    const [collapsed, setCollapsed] = useState(true);
+    const [collapsed, setCollapsed] = useState(open ? false : true);
     return (
         <div
             style={{
@@ -262,7 +262,7 @@ const parameterResult = [{
 const lastResultDate = "16 March, 2023", secondLastTestResultDate = "12 Jan, 2023";
 const OrganReports = () => (
     <div style={{ padding: "10px 20px", background: "var(--Colour-Palette-Neutral-Light-N10, #F5F8FC)"}}>
-        <OrganReport totalParameter={32} outOfRange={2} parameterResult={parameterResult} reportName="Diabetes" lastResultDate={lastResultDate} secondLastTestResultDate={secondLastTestResultDate} />
+        <OrganReport totalParameter={32} outOfRange={2} parameterResult={parameterResult} reportName="Diabetes" lastResultDate={lastResultDate} secondLastTestResultDate={secondLastTestResultDate} open={true} />
         <OrganReport totalParameter={10} outOfRange={0} parameterResult={parameterResult} reportName="Vitamins" lastResultDate={lastResultDate} secondLastTestResultDate={secondLastTestResultDate} />
     </div>
 )
